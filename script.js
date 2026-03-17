@@ -1,60 +1,64 @@
 const apiKey = 'ZT2F2DW4WMZT7PZ42223YU4FL';
-        let currentWeatherData = null;
-        let isExpanded = false;
+let currentWeatherData = null;
+let isExpanded = false;
 
-        async function updateWeather() {
-            const city = document.getElementById('citySelect').value;
-            const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=${apiKey}&contentType=json&lang=ru`;
+async function updateWeather() {
+    const city = document.getElementById('citySelect').value;
+    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=${apiKey}&contentType=json&lang=ru`;
 
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Город не найден');
-                const data = await response.json();
-                currentWeatherData = data;
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Город не найден');
+            return response.json();
+        })
+        .then(data => {
+            currentWeatherData = data;
 
-                const currentZone = document.getElementById('currentWeather');
-                currentZone.innerHTML = `
-                    <div class="city">${data.resolvedAddress}</div>
-                    <div class="temp">${Math.round(data.currentConditions.temp)}°C</div>
-                    <div class="desc">${data.currentConditions.conditions}</div>
-                `;
+            const currentZone = document.getElementById('currentWeather');
+            currentZone.innerHTML = `
+                <div class="city">${data.resolvedAddress}</div>
+                <div class="temp">${Math.round(data.currentConditions.temp)}°C</div>
+                <div class="desc">${data.currentConditions.conditions}</div>
+            `;
 
-                const forecastZone = document.getElementById('forecast');
-                forecastZone.innerHTML = '';
+            const forecastZone = document.getElementById('forecast');
+            forecastZone.innerHTML = '';
 
-                const nextDays = data.days.slice(1, 9); 
-                
-                nextDays.forEach(day => {
-                    const date = new Date(day.datetime).toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric' });
-                    forecastZone.innerHTML += `
-                        <div class="forecast-item">
-                            <div class="forecast-date">${date}</div>
-                            <div class="forecast-temp">${Math.round(day.temp)}°C</div>
-                            <div style="font-size: 0.7rem">${day.conditions}</div>
-                        </div>
-                    `;
+            const nextDays = data.days.slice(1, 9);
+
+            nextDays.forEach(day => {
+                const date = new Date(day.datetime).toLocaleDateString('ru-RU', {
+                    weekday: 'short',
+                    day: 'numeric'
                 });
 
-                if (isExpanded) {
-                    collapseDetails();
-                }
+                forecastZone.innerHTML += `
+          <div class="forecast-item">
+            <div class="forecast-date">${date}</div>
+            <div class="forecast-temp">${Math.round(day.temp)}°C</div>
+            <div style="font-size: 0.7rem">${day.conditions}</div>
+          </div>
+        `;
+            });
 
-            } catch (error) {
-                alert(error.message);
-            }
-        }
+            if (isExpanded) collapseDetails();
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    }
 
-        function showDetails() {
-            if (!currentWeatherData) return;
-            
-            const currentZone = document.getElementById('currentWeather');
-            const forecastZone = document.getElementById('forecast');
-            
-            currentZone.classList.add('expanded');
-            forecastZone.classList.add('hidden');
-            
-            const conditions = currentWeatherData.currentConditions;
-            currentZone.innerHTML = `
+function showDetails() {
+    if (!currentWeatherData) return;
+
+    const currentZone = document.getElementById('currentWeather');
+    const forecastZone = document.getElementById('forecast');
+
+    currentZone.classList.add('expanded');
+    forecastZone.classList.add('hidden');
+
+    const conditions = currentWeatherData.currentConditions;
+    currentZone.innerHTML = `
                 <div class="city">${currentWeatherData.resolvedAddress}</div>
                 <div class="temp">${Math.round(conditions.temp)}°C</div>
                 <div class="desc">${conditions.conditions}</div>
@@ -88,31 +92,31 @@ const apiKey = 'ZT2F2DW4WMZT7PZ42223YU4FL';
                 
                 <button id="backBtn" class="back-btn">Назад</button>
             `;
-            
-            document.getElementById('backBtn').addEventListener('click', collapseDetails);
-            
-            isExpanded = true;
-        }
 
-        function collapseDetails() {
-            const currentZone = document.getElementById('currentWeather');
-            const forecastZone = document.getElementById('forecast');
-            
-            currentZone.classList.remove('expanded');
-            forecastZone.classList.remove('hidden');
-            
-            if (currentWeatherData) {
-                currentZone.innerHTML = `
+    document.getElementById('backBtn').addEventListener('click', collapseDetails);
+
+    isExpanded = true;
+}
+
+function collapseDetails() {
+    const currentZone = document.getElementById('currentWeather');
+    const forecastZone = document.getElementById('forecast');
+
+    currentZone.classList.remove('expanded');
+    forecastZone.classList.remove('hidden');
+
+    if (currentWeatherData) {
+        currentZone.innerHTML = `
                     <div class="city">${currentWeatherData.resolvedAddress}</div>
                     <div class="temp">${Math.round(currentWeatherData.currentConditions.temp)}°C</div>
                     <div class="desc">${currentWeatherData.currentConditions.conditions}</div>
                 `;
-            }
-            
-            isExpanded = false;
-        }
+    }
 
-        document.getElementById('citySelect').addEventListener('change', updateWeather);
-        document.getElementById('searchBtn').addEventListener('click', showDetails);
+    isExpanded = false;
+}
 
-        updateWeather();
+document.getElementById('citySelect').addEventListener('change', updateWeather);
+document.getElementById('searchBtn').addEventListener('click', showDetails);
+
+updateWeather();
