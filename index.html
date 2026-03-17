@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gismeteo Display</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js" defer></script>
+</head>
+
+<body>
+    <div class="weather-app">
+        <div class="search-bar">
+            <select id="citySelect" class="city-select">
+                <option value="Kursk">Курск</option>
+                <option value="Moscow">Москва</option>
+                <option value="Saint Petersburg">Санкт‑Петербург</option>
+                <option value="Kazan">Казань</option>
+                <option value="Novosibirsk">Новосибирск</option>
+                <option value="Yekaterinburg">Екатеринбург</option>
+                <option value="Sochi">Сочи</option>
+                <option value="Vladivostok">Владивосток</option>
+            </select>
+            <button id="searchBtn">Подробнее</button>
+        </div>
+
+        <div id="currentWeather" class="container"></div>
+        
+        <div class="forecast-container" id="forecast"></div>
+    </div>
+
+</body>
+
+</html>
